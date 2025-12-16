@@ -4,6 +4,7 @@ import { User } from "./user.entity";
 import { Repository } from "typeorm";
 import { CreateUserDto } from "./dtos/createuser-dto";
 import { UpdateUserDto } from "./dtos/updateuser-dto";
+import * as bcrypt from 'bcrypt';
 
 
 @Injectable()
@@ -16,6 +17,10 @@ export class UserService {
 
     async create (createUserDto: CreateUserDto): Promise<User> {
 
+        const salt = await bcrypt.genSalt();
+
+        const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
+
         const userRole = {id: createUserDto.userRoleId};
 
         const animals = createUserDto.animalIds
@@ -24,6 +29,7 @@ export class UserService {
 
         const newUser = this.userRepository.create({
             ...createUserDto,
+            password: hashedPassword,
             userRole : userRole,
             animals : animals,
         });
@@ -92,5 +98,23 @@ export class UserService {
         if (result.affected === 0) {
             throw new ConflictException('Kullanıcı bulunamadı!');
         }
+    }
+
+    async findByEmail (identifier: string): Promise<User | null> {
+
+        return this.userRepository.findOne({
+            where: {email: identifier},
+            relations: ['userRole', 'animals']
+        })
+
+    }
+
+    async findByUsername (identifier: string): Promise<User | null> {
+
+        return this.userRepository.findOne({
+            where: {username: identifier},
+            relations: ['userRole' , 'animals']
+        })
+
     }
 }

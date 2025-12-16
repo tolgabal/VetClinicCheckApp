@@ -26,7 +26,6 @@ export class User {
 
     // animal entity'sini hazırladıktan sonra buraya OneToMany ilişkisi ekleyeceğim
     @ManyToMany(() => Animal, (animal) => animal.users)
-    @JoinTable()
     animals: Animal[];
     
 }
