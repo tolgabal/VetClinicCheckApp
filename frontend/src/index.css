@@ -1,0 +1,26 @@
+/* src/index.css */
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* Sayfa kenar boşluklarını sıfırla */
+body {
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #f5f6fa; /* Hafif gri arka plan */
+}
+
+/* React'in ana kapsayıcısını tam ekran yap */
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  /* Vite varsayılanı olan max-width ve text-align'ı iptal ediyoruz: */
+  max-width: none; 
+  text-align: left; 
+}

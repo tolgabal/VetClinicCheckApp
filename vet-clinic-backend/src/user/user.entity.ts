@@ -24,7 +24,6 @@ export class User {
     @ManyToOne(() => UserRole, (userRole) => userRole.users)
     userRole: UserRole;
 
-    // animal entity'sini hazırladıktan sonra buraya OneToMany ilişkisi ekleyeceğim
     @ManyToMany(() => Animal, (animal) => animal.users)
     animals: Animal[];
     

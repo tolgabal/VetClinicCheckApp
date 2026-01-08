@@ -16,4 +16,7 @@ export class CreateAnimalDto {
 
     @IsInt({ each: true })
     userIds: number[];
+
+    @IsInt({ each: true })
+    vaccineIds: number[];
 }

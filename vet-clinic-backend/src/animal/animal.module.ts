@@ -6,12 +6,13 @@ import { AnimalType } from "src/animaltype/animaltype.entity";
 import { Vaccine } from "src/vaccine/vaccine.entity";
 import { AnimalController } from "./animal.controller";
 import { AnimalService } from "./animal.service";
+import { UserRole } from "src/userrole/userrole.entity";
 
 
 @Module({
 
     imports : [
-        TypeOrmModule.forFeature ([Animal, User, AnimalType, Vaccine])
+        TypeOrmModule.forFeature ([Animal, User, AnimalType, Vaccine, UserRole])
     ],
 
     controllers : [AnimalController],

@@ -24,6 +24,6 @@ export class RolesGuard implements CanActivate {
 
     // 3. Kontrol: Kullanıcının rolü, izin verilen rollerden biri mi?
     // user?.role -> Token payload'ına 'role' adıyla koyduğumuz için burası 'role' olmalı.
-    return requiredRoles.some((role) => user?.role === role);
+    return requiredRoles.some((role) => user?.role?.name === role);
   }
 }

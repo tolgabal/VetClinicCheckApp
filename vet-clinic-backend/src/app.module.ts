@@ -10,13 +10,14 @@ import { AnimalTypeModule } from './animaltype/animaltype.module';
 import { UserModule } from './user/user.module';
 import { UserRoleModule } from './userrole/userrole.module';
 import { VaccineModule } from './vaccine/vaccine.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'vet-clinic.sqlite',
-      entities: [Animal, AnimalType, User, UserRole, Vaccine], // entityleri hazırladıkça buraya ekleyeceğim UNUTMA!!!
+      entities: [Animal, AnimalType, User, UserRole, Vaccine],
       synchronize: true,
     }),
 
@@ -24,7 +25,8 @@ import { VaccineModule } from './vaccine/vaccine.module';
     AnimalTypeModule,
     UserModule,
     UserRoleModule,
-    VaccineModule
+    VaccineModule,
+    AuthModule
   ],
   controllers: [],
   providers: [],

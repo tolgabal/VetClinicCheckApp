@@ -1,7 +1,9 @@
+import { Injectable } from '@nestjs/common';
 import { JwtService } from "@nestjs/jwt";
 import { UserService } from "src/user/user.service";
 import * as bcrypt from 'bcrypt';
 
+@Injectable()
 export class AuthService {
 
     constructor( 
@@ -10,7 +12,6 @@ export class AuthService {
     ) {}
 
     async validateUser (identifier: string, password: string) {
-
         let user;
 
         if(identifier.includes('@')) {
@@ -20,33 +21,31 @@ export class AuthService {
         }
 
         if ( user && (await bcrypt.compare(password, user.password))) {
-
             const {password, ...result} = user;
             return result;
-
         }
 
         return null;
-
     }
 
     async login(user: any) {
-
         const payload = { 
             username: user.username, 
-            sub: user.id,   // Standart JWT ID alanı
-            role: user.userRole
+            sub: user.id,   
+            role: user.userRole // Backend'de rol objesi nasıl dönüyorsa öyle
         };
 
         return {
-            accessToken: this.jwtService.sign(payload),
+            accessToken: this.jwtService.sign(payload), // Frontend'de 'access_token' bekliyoruz, ismi böyle olsun
             user: {
                 id: user.id,
                 username: user.username,
+                name: user.name,
                 email: user.email,
-                role: user.userRole 
+                userRole: user.userRole
             }
         };
     }
 
+    
 }

@@ -52,13 +52,15 @@ export class AnimalTypeService {
     }
 
     findAll(): Promise<AnimalType[]> {
-        return this.animalTypeRepository.find();
+        return this.animalTypeRepository.find({
+            relations: ['animals']
+        });
     }
 
     async findById(id: number): Promise <AnimalType> {
 
         const animalType = await this.animalTypeRepository.findOne({
-            where: {id : id},
+            where: {id : id}, relations: ['animals']
         })
         if(!animalType) {
             throw new ConflictException('Aradığınız hayvan tipi bulunamadı!')

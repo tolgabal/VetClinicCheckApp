@@ -8,7 +8,7 @@ import { RolesGuard } from "src/auth/guards/roles.guard";
 import { Roles } from "src/auth/decorators/role.decorator";
 import { Role } from "src/enums/role.enum";
 
-@UseGuards(JwtAuthGuard, RolesGuard)
+//@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('user')
 export class UserController {
 
@@ -17,13 +17,13 @@ export class UserController {
     ) { }
 
     @Post()
-    @Roles(Role.Admin, Role.Veteriner)
+    //@Roles(Role.Admin, Role.Veteriner)
     create(@Body() createUserDto: CreateUserDto) {
         return this.userService.create(createUserDto);
     }
 
     @Get()
-    @Roles(Role.Admin, Role.Veteriner)
+    //@Roles(Role.Admin, Role.Veteriner)
     findAll() {
         return this.userService.findAll();
     }

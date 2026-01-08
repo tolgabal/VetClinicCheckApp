@@ -32,7 +32,7 @@ export class AnimalService {
             return await this.animalRepository.save(newAnimal);
         } catch (error) {
             if (error.code === 'SQLITE_CONSTRAINT') {
-                throw new Error('Foreign key constraint failed. Please ensure that the referenced AnimalType and Users exist.');
+                throw new ConflictException('Foreign key constraint failed. Please ensure that the referenced AnimalType and Users exist.');
             }
             throw error;
         }
@@ -71,14 +71,14 @@ export class AnimalService {
 
     findAll(): Promise<Animal[]> {
         return this.animalRepository.find({
-            relations: ['animalType', 'users', 'vaccines']
+            relations: ['animalType', 'users', 'vaccines', 'users.userRole']
         })
     }
 
     async findOne(id: number): Promise<Animal> {
         const animal = await this.animalRepository.findOne({
             where: {id: id},
-            relations: ['animalType', 'users', 'vaccines']
+            relations: ['animalType', 'users', 'vaccines', 'users.userRole']
         })
         if (!animal) {
             throw new ConflictException('Hayvan bulunamadı!');
