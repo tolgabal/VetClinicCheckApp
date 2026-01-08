@@ -32,11 +32,11 @@ export class AuthService {
         const payload = { 
             username: user.username, 
             sub: user.id,   
-            role: user.userRole // Backend'de rol objesi nasıl dönüyorsa öyle
+            role: user.userRole
         };
 
         return {
-            accessToken: this.jwtService.sign(payload), // Frontend'de 'access_token' bekliyoruz, ismi böyle olsun
+            accessToken: this.jwtService.sign(payload),
             user: {
                 id: user.id,
                 username: user.username,

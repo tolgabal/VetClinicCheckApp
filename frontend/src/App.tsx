@@ -3,23 +3,20 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import { useAuth } from './context/authContext';
-import MainLayout from './layout/MainLayout'; // <--- Import et
+import MainLayout from './layout/MainLayout';
 import AddAnimal from './pages/AddAnimal';
 import AnimalDetail from './pages/AnimalDetail';
 import UserManagement from './pages/userManagement';
 import TypeManagement from './pages/TypeManagement';
 import EditAnimal from './pages/EditAnimal';
 
-// PrivateRoute'u güncellememiz gerekmiyor ama kullanımı değişecek
 function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuth(); // isLoading'i de alıyoruz
+  const { isAuthenticated, isLoading } = useAuth();
 
-  // 1. Eğer sistem hala token kontrolü yapıyorsa BEKLE
   if (isLoading) {
     return <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>Yükleniyor...</div>;
   }
 
-  // 2. Kontrol bitti, kullanıcı yoksa Login'e at
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
 }
 

@@ -8,16 +8,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: 'GIZLI_KELIME', // BURAYI .env DOSYASINDAN ALSAM DAHA İYİ OLUR Bİ ARA BAK
+      secretOrKey: 'GIZLI_KELIME',
     });
   }
 
-  // Token geçerliyse bu çalışır ve return ettiği değer 'request.user' olur
   async validate(payload: any) {
     return { 
       userId: payload.sub, 
       username: payload.username, 
-      userRole: payload.userRole, // Guard'larda bu rolü okuyacağım
+      userRole: payload.userRole,
       email: payload.email
     };
   }

@@ -12,8 +12,6 @@ export default function AddAnimal() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // --- AYRIŞTIRILMIŞ STATE'LER ---
-  // İki kutuyu ayrı yönetmek için state'leri ayırdık
   const [selectedOwnerIds, setSelectedOwnerIds] = useState<number[]>([]);
   const [selectedVetIds, setSelectedVetIds] = useState<number[]>([]);
 
@@ -21,7 +19,7 @@ export default function AddAnimal() {
     name: '',
     age: 0,
     animalTypeId: 0,
-    userIds: [], // Bunu submit anında dolduracağız
+    userIds: [],
     vaccineIds: []
   });
 
@@ -46,11 +44,8 @@ export default function AddAnimal() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-        // --- BİRLEŞTİRME ANI ---
-        // Sahipleri ve Veterinerleri tek bir potada eritiyoruz
         const allUserIds = [...selectedOwnerIds, ...selectedVetIds];
 
-        // Eğer hiç kimse seçilmediyse uyarı verebiliriz (Opsiyonel)
         if (allUserIds.length === 0) {
             toast.warning('En az bir sahip veya veteriner seçmelisiniz.');
             return; 
@@ -60,7 +55,7 @@ export default function AddAnimal() {
             ...formData,
             age: Number(formData.age),
             animalTypeId: Number(formData.animalTypeId),
-            userIds: allUserIds // Birleşmiş liste buraya gidiyor
+            userIds: allUserIds
         });
         
         toast.success('Hayvan başarıyla eklendi!');
@@ -123,12 +118,12 @@ export default function AddAnimal() {
           </label>
           <select 
             multiple
-            value={selectedOwnerIds.map(String)} // Kendi state'ini kullanıyor
+            value={selectedOwnerIds.map(String)}
             onChange={e => {
                 const selected = Array.from(e.target.selectedOptions, option => Number(option.value));
-                setSelectedOwnerIds(selected); // Kendi state'ini güncelliyor
+                setSelectedOwnerIds(selected);
             }}
-            style={{ ...inputStyle, height: '100px', border: '1px solid #3498db' }} // Mavi çerçeve
+            style={{ ...inputStyle, height: '100px', border: '1px solid #3498db' }}
           >
             {users.filter(u => u.userRole?.name === 'User').map(u => (
                 <option key={u.id} value={u.id}>
@@ -145,12 +140,12 @@ export default function AddAnimal() {
           </label>
           <select 
             multiple
-            value={selectedVetIds.map(String)} // Kendi state'ini kullanıyor
+            value={selectedVetIds.map(String)}
             onChange={e => {
                 const selected = Array.from(e.target.selectedOptions, option => Number(option.value));
-                setSelectedVetIds(selected); // Kendi state'ini güncelliyor
+                setSelectedVetIds(selected);
             }}
-            style={{ ...inputStyle, height: '100px', border: '1px solid #9b59b6' }} // Mor çerçeve
+            style={{ ...inputStyle, height: '100px', border: '1px solid #9b59b6' }}
           >
             {users.filter(u => u.userRole?.name === 'Veteriner').map(u => (
                 <option key={u.id} value={u.id}>

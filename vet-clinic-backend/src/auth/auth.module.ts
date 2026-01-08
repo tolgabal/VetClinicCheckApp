@@ -8,11 +8,11 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
-    UserModule, // User bulmak için lazım
+    UserModule,
     PassportModule,
     JwtModule.register({
-      secret: 'GIZLI_KELIME', // Strategy'deki ile AYNI OLMALI (.env kullanmalıyım)
-      signOptions: { expiresIn: '1d' }, // Token 1 gün geçerli
+      secret: 'GIZLI_KELIME',
+      signOptions: { expiresIn: '1d' },
     }),
   ],
   providers: [AuthService, JwtStrategy],

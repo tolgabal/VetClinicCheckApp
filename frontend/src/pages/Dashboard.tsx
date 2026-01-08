@@ -17,8 +17,6 @@ export default function Dashboard() {
 
   const loadAnimals = async () => {
     try {
-      // Backend'den TÜM hayvanlar çekilir (User, Vet ve Admin için ortak endpoint varsayıyoruz)
-      // Gerçek hayatta backend'de filtrelemek daha güvenlidir ama şimdilik burada yapıyoruz.
       const data = await animalService.getAll();
       setAnimals(data);
     } catch (error) {
@@ -28,35 +26,28 @@ export default function Dashboard() {
     }
   };
 
-  // --- ROL BAZLI FİLTRELEME MANTIĞI ---
   const getFilteredAnimals = () => {
     if (!user) return [];
 
-    const roleName = user.userRole?.name; // Admin, Veteriner, User
+    const roleName = user.userRole?.name;
 
-    // 1. Eğer Kullanıcı ise: Sadece kendi sahiplendiği hayvanları görsün
     if (roleName === 'User') {
-      // Hayvanın sahipleri (users) listesinde, giriş yapan kullanıcının ID'si var mı?
       return animals.filter(animal => 
         animal.users?.some(owner => owner.id === user.id)
       );
     }
     else if (roleName === 'Veteriner') {
-      // Hayvanın sahipleri (users) listesinde, giriş yapan kullanıcının ID'si var mı?
       return animals.filter(animal => 
         animal.users?.some(owner => owner.id === user.id)
       );
     }
 
-    // 2. Veteriner veya Admin ise: Hepsini görsün
-    // (İleride Veteriner için "sadece bana atananlar" mantığı da eklenebilir)
     return animals;
   };
 
   const filteredList = getFilteredAnimals();
   const userRoleName = user?.userRole?.name;
 
-  // Silme işlemi (Sadece Admin veya belki Veteriner için)
   const handleDelete = async (id: number) => {
     if (!window.confirm('Kaydı silmek istediğinize emin misiniz?')) return;
     try {
@@ -77,7 +68,6 @@ export default function Dashboard() {
           {userRoleName === 'User' ? 'Benim Dostlarım' : 'Hasta Listesi'}
         </h1>
         
-        {/* Sadece Admin ve Veteriner Yeni Ekleme Yapabilsin */}
         {userRoleName !== 'User' && (
           <button 
             onClick={() => navigate('/add-animal')}
@@ -97,7 +87,6 @@ export default function Dashboard() {
               <th style={thStyle}>Tür</th>
               <th style={thStyle}>Yaş</th>
               
-              {/* Sadece Veteriner ve Admin "Sahip" bilgisini görsün */}
               {userRoleName !== 'User' && <th style={thStyle}>Sahibi</th>}
 
               {userRoleName !== 'Veteriner' && <th style={thStyle}>İlgilenen Veteriner</th>}
@@ -112,7 +101,6 @@ export default function Dashboard() {
                 <td style={tdStyle}>{animal.animalType?.name || '-'}</td>
                 <td style={tdStyle}>{animal.age}</td>
 
-                {/* Sahip Bilgisi Kolonu */}
                 {userRoleName !== 'User' && (
                   <td style={tdStyle}>
                     {animal.users && animal.users.length > 0 
@@ -134,7 +122,6 @@ export default function Dashboard() {
                 <td style={tdStyle}>
                   <div style={{ display: 'flex', gap: '5px' }}>
                     
-                    {/* VETERİNER İÇİN BUTONLAR */}
                     {userRoleName === 'Veteriner' && (
                       <>
                         <button onClick={() => navigate(`/animal/${animal.id}`)}>
@@ -143,14 +130,12 @@ export default function Dashboard() {
                       </>
                     )}
 
-                    {/* USER İÇİN BUTONLAR */}
                     {userRoleName === 'User' && (
                         <button onClick={() => navigate(`/animal/${animal.id}`)}>
                           Görüntüle
                         </button>
                     )}
 
-                    {/* ADMİN İÇİN BUTONLAR */}
                     {userRoleName === 'Admin' && (
                       <>
                         <button onClick={() => navigate(`/edit-animal/${animal.id}`)} style={actionBtnStyle('#2196F3')}>
@@ -172,7 +157,6 @@ export default function Dashboard() {
   );
 }
 
-// Stiller
 const thStyle = { padding: '15px', borderBottom: '2px solid #eee', fontWeight: '600' };
 const tdStyle = { padding: '12px' };
 const actionBtnStyle = (color: string) => ({

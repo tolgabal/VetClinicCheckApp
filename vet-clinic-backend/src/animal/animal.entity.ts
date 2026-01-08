@@ -14,16 +14,13 @@ export class Animal {
     @Column()
     age: number;
     
-    // animaltype entity'sini hazırladıktan sonra buraya ManyToOne ilişkisi ekleyeceğim
     @ManyToOne(() => AnimalType, (animalType) => animalType.animals)
     animalType: AnimalType;
 
-    // user entity'sini hazırladıktan sonra buraya ManyToMany ilişkisi ekleyeceğim
     @ManyToMany(() => User, (user) => user.animals)
     @JoinTable()
     users: User[];
 
-    // vaccine entity'sini hazırladıktan sonra buraya OneToMany ilişkisi ekleyeceğim
     @OneToMany(() => Vaccine, (vaccine) => vaccine.animal)
     vaccines: Vaccine[];
 }

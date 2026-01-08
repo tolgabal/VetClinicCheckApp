@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { animalService } from '../services/animalService';
 import { vaccineService } from '../services/vaccineService';
-import type { Animal, CreateVaccineDto, Vaccine } from '../types'; // Vaccine tipini import et
+import type { Animal, CreateVaccineDto, Vaccine } from '../types';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/authContext';
 
@@ -14,9 +14,8 @@ export default function AnimalDetail() {
   const [animal, setAnimal] = useState<Animal | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Modal ve Form State'leri
   const [showModal, setShowModal] = useState(false);
-  const [editingVaccineId, setEditingVaccineId] = useState<number | null>(null); // Düzenlenen ID
+  const [editingVaccineId, setEditingVaccineId] = useState<number | null>(null);
 
   const [vaccineForm, setVaccineForm] = useState<Partial<CreateVaccineDto>>({
     name: '',
@@ -42,9 +41,6 @@ export default function AnimalDetail() {
     }
   };
 
-  // --- MODAL İŞLEMLERİ ---
-
-  // Tarihi Input formatına çevirir (YYYY-MM-DD)
   const formatDateForInput = (dateString?: Date | string) => {
     if (!dateString) return '';
     return new Date(dateString).toISOString().split('T')[0];
@@ -67,7 +63,6 @@ export default function AnimalDetail() {
     setShowModal(true);
   };
 
-  // --- KAYDET / GÜNCELLE ---
   const handleSaveVaccine = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id || !vaccineForm.name || !vaccineForm.lastVaccinationDate || !vaccineForm.nextVaccinationDate) {
@@ -85,17 +80,15 @@ export default function AnimalDetail() {
       };
 
       if (editingVaccineId) {
-        // GÜNCELLEME
         await vaccineService.update(editingVaccineId, payload);
         toast.success('Aşı güncellendi.');
       } else {
-        // EKLEME
         await vaccineService.create(payload);
         toast.success('Aşı eklendi.');
       }
       
       setShowModal(false);
-      loadAnimal(); // Listeyi yenile
+      loadAnimal();
     } catch (error) {
       toast.error('İşlem sırasında hata oluştu.');
     }
@@ -122,7 +115,6 @@ export default function AnimalDetail() {
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto', paddingBottom: '50px' }}>
       
-      {/* ÜST KISIM (Aynı) */}
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', gap: '15px' }}>
         <button onClick={() => navigate(-1)} style={backBtnStyle}>← Geri</button>
         <h1 style={{ margin: 0, color: '#2c3e50' }}>{animal.name}</h1>
@@ -130,13 +122,11 @@ export default function AnimalDetail() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-        {/* Kimlik Kartı */}
         <div style={cardStyle}>
           <h3 style={headerStyle}>📋 Kimlik Kartı</h3>
           <div style={rowStyle}><strong>Yaş:</strong> {animal.age}</div>
         </div>
 
-        {/* İletişim */}
         <div style={cardStyle}>
           <h3 style={headerStyle}>👥 İletişim</h3>
           <div style={{ marginBottom: '10px' }}>
@@ -154,7 +144,6 @@ export default function AnimalDetail() {
         </div>
       </div>
 
-      {/* --- AŞI TAKVİMİ --- */}
       <div style={{ ...cardStyle, marginTop: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
             <h3 style={{ ...headerStyle, borderBottom: 'none', marginBottom: 0 }}>💉 Aşı Takvimi</h3>
@@ -190,9 +179,7 @@ export default function AnimalDetail() {
                             <td style={tdStyle}>{v.description}</td>
                             {canEdit && (
                                 <td style={tdStyle}>
-                                    {/* DÜZENLE BUTONU */}
                                     <button onClick={() => openEditModal(v)} style={editBtnStyle}>Düzenle</button>
-                                    {/* SİL BUTONU */}
                                     <button onClick={() => handleDeleteVaccine(v.id)} style={deleteBtnStyle}>Sil</button>
                                 </td>
                             )}
@@ -205,7 +192,6 @@ export default function AnimalDetail() {
         )}
       </div>
 
-      {/* --- ORTAK MODAL (EKLE & DÜZENLE) --- */}
       {showModal && (
         <div style={modalOverlayStyle}>
             <div style={modalContentStyle}>
@@ -254,7 +240,6 @@ export default function AnimalDetail() {
   );
 }
 
-// --- CSS STİLLERİ ---
 const cardStyle: React.CSSProperties = { backgroundColor: 'white', padding: '25px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', border: '1px solid #eaeaea' };
 const headerStyle: React.CSSProperties = { marginTop: 0, borderBottom: '2px solid #f0f0f0', paddingBottom: '10px', marginBottom: '15px', color: '#34495e' };
 const rowStyle: React.CSSProperties = { marginBottom: '12px', color: '#2c3e50' };

@@ -8,10 +8,8 @@ interface MainLayoutProps {
 export default function MainLayout({ children }: MainLayoutProps) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      {/* Sabit Navbar */}
       <Navbar />
       
-      {/* Sayfa İçeriği */}
       <main style={{ flex: 1, padding: '20px', backgroundColor: '#f5f6fa' }}>
         {children}
       </main>

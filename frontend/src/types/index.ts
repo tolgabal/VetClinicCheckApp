@@ -1,4 +1,3 @@
-// Enums
 export const Role = {
   Admin: 'Admin',
   Veteriner: 'Veteriner',
@@ -7,7 +6,6 @@ export const Role = {
 
 export type Role = typeof Role[keyof typeof Role];
 
-// Entity Interfaces
 export interface Animal {
   id: number;
   name: string;
@@ -53,9 +51,6 @@ export interface Vaccine {
   animal: Animal;
 }
 
-// DTO Interfaces
-
-// Animal DTOs
 export interface CreateAnimalDto {
   name: string;
   age: number;
@@ -70,7 +65,6 @@ export interface DeleteAnimalDto {
   id: number;
 }
 
-// AnimalType DTOs
 export interface CreateAnimalTypeDto {
   name: string;
 }
@@ -81,7 +75,6 @@ export interface DeleteAnimalTypeDto {
   id: number;
 }
 
-// User DTOs
 export interface CreateUserDto {
   username: string;
   name: string;
@@ -97,7 +90,6 @@ export interface DeleteUserDto {
   id: number;
 }
 
-// UserRole DTOs
 export interface CreateUserRoleDto {
   name: string;
 }
@@ -108,7 +100,6 @@ export interface DeleteUserRoleDto {
   id: number;
 }
 
-// Vaccine DTOs
 export interface CreateVaccineDto {
   name: string;
   description: string;
@@ -123,7 +114,6 @@ export interface DeleteVaccineDto {
   id: number;
 }
 
-// Auth DTOs
 export interface LoginUserDto {
   identifier: string;
   password: string;

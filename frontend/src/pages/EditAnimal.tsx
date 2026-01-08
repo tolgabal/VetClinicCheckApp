@@ -9,16 +9,13 @@ export default function EditAnimal() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Dropdown listeleri
   const [types, setTypes] = useState<AnimalType[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Ayrıştırılmış Seçim State'leri
   const [selectedOwnerIds, setSelectedOwnerIds] = useState<number[]>([]);
   const [selectedVetIds, setSelectedVetIds] = useState<number[]>([]);
 
-  // Form Verisi
   const [formData, setFormData] = useState<CreateAnimalDto>({
     name: '',
     age: 0,
@@ -34,26 +31,23 @@ export default function EditAnimal() {
   const loadData = async () => {
     if (!id) return;
     try {
-      // 1. Gerekli tüm verileri paralel çekelim
       const [typeData, userData, animalData] = await Promise.all([
         resourceService.getAnimalTypes(),
         resourceService.getUsers(),
-        animalService.getById(Number(id)) // Mevcut hayvan verisi
+        animalService.getById(Number(id))
       ]);
 
       setTypes(typeData);
       setUsers(userData);
 
-      // 2. Formu mevcut verilerle dolduralım
       setFormData({
         name: animalData.name,
         age: animalData.age,
         animalTypeId: animalData.animalType?.id || 0,
-        userIds: [], // Bunu aşağıda owner/vet birleştirerek yapacağız
+        userIds: [],
         vaccineIds: []
       });
 
-      // 3. Mevcut ilişkileri (User ve Vet) kutucuklara dağıtalım
       if (animalData.users) {
         const owners = animalData.users
             .filter(u => u.userRole?.name === 'User')
@@ -80,14 +74,13 @@ export default function EditAnimal() {
     if (!id) return;
 
     try {
-      // Sahipleri ve Veterinerleri birleştir
       const allUserIds = [...selectedOwnerIds, ...selectedVetIds];
 
       await animalService.update(Number(id), {
         ...formData,
         age: Number(formData.age),
         animalTypeId: Number(formData.animalTypeId),
-        userIds: allUserIds // Birleşmiş liste gönderiliyor
+        userIds: allUserIds
       });
 
       toast.success('Hayvan bilgileri güncellendi!');
@@ -108,7 +101,6 @@ export default function EditAnimal() {
       
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
         
-        {/* İsim */}
         <div>
           <label style={labelStyle}>İsim:</label>
           <input 
@@ -119,7 +111,6 @@ export default function EditAnimal() {
           />
         </div>
 
-        {/* Yaş */}
         <div>
           <label style={labelStyle}>Yaş:</label>
           <input 
@@ -130,7 +121,6 @@ export default function EditAnimal() {
           />
         </div>
 
-        {/* Tür */}
         <div>
           <label style={labelStyle}>Tür:</label>
           <select 
@@ -146,7 +136,6 @@ export default function EditAnimal() {
           </select>
         </div>
 
-        {/* SAHİPLER */}
         <div>
           <label style={{ ...labelStyle, color: '#2980b9' }}>
             Sahipler (CTRL ile çoklu seçim):
@@ -168,7 +157,6 @@ export default function EditAnimal() {
           </select>
         </div>
 
-        {/* VETERİNERLER */}
         <div>
           <label style={{ ...labelStyle, color: '#8e44ad' }}>
             Veterinerler (CTRL ile çoklu seçim):
@@ -198,7 +186,6 @@ export default function EditAnimal() {
   );
 }
 
-// STİLLER
 const inputStyle: React.CSSProperties = { width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem', boxSizing: 'border-box' };
 const labelStyle: React.CSSProperties = { display: 'block', marginBottom: '5px', fontWeight: '500' };
 const saveBtnStyle: React.CSSProperties = { padding: '12px', backgroundColor: '#f39c12', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold', marginTop: '10px' };

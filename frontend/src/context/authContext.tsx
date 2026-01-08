@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  isLoading: boolean; // Yükleniyor durumu eklendi
+  isLoading: boolean;
   login: (data: LoginUserDto) => Promise<void>;
   logout: () => void;
 }
@@ -15,10 +15,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  // Başlangıçta yükleniyor true olsun ki, kontrol bitmeden login sayfasına atmasın
   const [isLoading, setIsLoading] = useState(true); 
 
-  // SAYFA YÜKLENİNCE ÇALIŞIR (F5 ATINCA)
   useEffect(() => {
     checkAuth();
   }, []);
@@ -26,23 +24,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const checkAuth = async () => {
     const token = localStorage.getItem('token');
     
-    // Eğer token yoksa direkt yüklemeyi bitir
     if (!token) {
       setIsLoading(false);
       return;
     }
 
     try {
-      // Token varsa backend'den güncel kullanıcı bilgisini çek
       const userData = await authService.getProfile();
       setUser(userData);
     } catch (error) {
       console.error("Token geçersiz, oturum kapatılıyor.");
-      // Token geçersizse temizle
       localStorage.removeItem('token');
       setUser(null);
     } finally {
-      // İşlem bitti, yükleniyor durumunu kapat
       setIsLoading(false);
     }
   };
@@ -53,7 +47,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       if (response.accessToken) {
         localStorage.setItem('token', response.accessToken);
-        // Login olunca user bilgisini state'e at
         setUser(response.user); 
         toast.success(`Hoşgeldin ${response.user.name || response.user.username}`);
       }
@@ -74,7 +67,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       user, 
       login, 
       logout, 
-      isAuthenticated: !!user, // User varsa true, yoksa false
+      isAuthenticated: !!user,
       isLoading 
     }}>
       {children}

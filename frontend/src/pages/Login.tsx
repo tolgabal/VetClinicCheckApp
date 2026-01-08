@@ -5,21 +5,17 @@ import { useNavigate } from 'react-router-dom';
 export default function Login() {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useAuth(); // Context'ten login fonksiyonunu çektik
-  const navigate = useNavigate(); // Sayfa yönlendirmesi için
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Sayfanın yenilenmesini engelle
+    e.preventDefault();
     
     try {
-      // 1. Giriş yapmayı dene
       await login({ identifier, password });
       
-      // 2. Başarılıysa anasayfaya yönlendir
       navigate('/'); 
     } catch (error) {
-      // Hata olursa AuthContext içindeki toast.error zaten çalışacak,
-      // burada ekstra bir şey yapmamıza gerek yok.
       console.error("Giriş hatası:", error);
     }
   };

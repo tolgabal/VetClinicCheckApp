@@ -12,20 +12,16 @@ export default function Navbar() {
 
   return (
     <nav style={navStyle}>
-      {/* Sol Taraf: Logo / Başlık */}
       <div style={brandStyle}>
         <Link to="/" style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem', fontWeight: 'bold' }}>
           🐾 VetClinic
         </Link>
       </div>
 
-      {/* Orta: Menü Linkleri (İstersen artırabilirsin) */}
       <div style={menuStyle}>
         <Link to="/" style={linkStyle}>Ana Sayfa</Link>
-        {/* İleride buraya 'Randevular', 'Aşılar' gibi linkler gelecek */}
       </div>
 
-      {/* Sağ Taraf: Kullanıcı Bilgisi ve Çıkış */}
       <div style={userSectionStyle}>
         {(user?.userRole?.name === 'Admin') && (
           <>
@@ -53,14 +49,13 @@ export default function Navbar() {
   );
 }
 
-// --- Basit Stiller ---
 const navStyle: React.CSSProperties = {
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
   padding: '0 20px',
   height: '60px',
-  backgroundColor: '#2c3e50', // Koyu Lacivert
+  backgroundColor: '#2c3e50',
   color: 'white',
   boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
 };
@@ -88,7 +83,7 @@ const userSectionStyle: React.CSSProperties = {
 
 const logoutButtonStyle: React.CSSProperties = {
   padding: '8px 12px',
-  backgroundColor: '#e74c3c', // Kırmızı
+  backgroundColor: '#e74c3c',
   color: 'white',
   border: 'none',
   borderRadius: '4px',

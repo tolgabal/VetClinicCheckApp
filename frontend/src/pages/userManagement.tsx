@@ -3,9 +3,8 @@ import { userService } from '../services/userService';
 import type { User, CreateUserDto } from '../types';
 import { toast } from 'react-toastify';
 
-// Rol ID'lerinin veritabanındaki karşılığı (Bunu kendi DB'ne göre kontrol et!)
 const ROLE_IDS = {
-  ADMIN: 1, // veya senin DB'de kaçsa
+  ADMIN: 1,
   VETERINER: 2,
   USER: 3
 };
@@ -14,18 +13,16 @@ export default function UserManagement() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Modal State
   const [showModal, setShowModal] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
-  // Form State
   const [formData, setFormData] = useState<CreateUserDto>({
     username: '',
     name: '',
     email: '',
     password: '',
-    userRoleId: ROLE_IDS.USER, // Varsayılan User
+    userRoleId: ROLE_IDS.USER,
     animalIds: []
   });
 
@@ -44,7 +41,6 @@ export default function UserManagement() {
     }
   };
 
-  // Silme İşlemi
   const handleDelete = async (id: number) => {
     if (!window.confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?')) return;
     try {
@@ -56,14 +52,12 @@ export default function UserManagement() {
     }
   };
 
-  // Modal Açma (Yeni Ekleme)
   const openAddModal = () => {
     setIsEditMode(false);
     setFormData({ username: '', name: '', email: '', password: '', userRoleId: ROLE_IDS.USER, animalIds: [] });
     setShowModal(true);
   };
 
-  // Modal Açma (Düzenleme)
   const openEditModal = (user: User) => {
     setIsEditMode(true);
     setSelectedUserId(user.id);
@@ -71,31 +65,28 @@ export default function UserManagement() {
       username: user.username,
       name: user.name,
       email: user.email,
-      password: '', // Şifre boş gelir, değiştirilmek istenirse girilir
+      password: '',
       userRoleId: user.userRole?.id || ROLE_IDS.USER,
-      animalIds: [] // Hayvan ilişkilerini buradan yönetmiyoruz şimdilik
+      animalIds: []
     });
     setShowModal(true);
   };
 
-  // Form Submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (isEditMode && selectedUserId) {
-        // GÜNCELLEME
         const updateData = { ...formData };
         if (!updateData.password) delete (updateData as any).password;
 
         await userService.update(selectedUserId, updateData);
         toast.success('Kullanıcı güncellendi.');
       } else {
-        // YENİ EKLEME
         await userService.create(formData);
         toast.success('Yeni kullanıcı oluşturuldu.');
       }
       setShowModal(false);
-      loadUsers(); // Listeyi yenile
+      loadUsers();
     } catch (error) {
       toast.error('İşlem başarısız. (Email veya Kullanıcı adı çakışıyor olabilir)');
     }
@@ -140,7 +131,6 @@ export default function UserManagement() {
         </tbody>
       </table>
 
-      {/* --- MODAL --- */}
       {showModal && (
         <div style={modalOverlayStyle}>
           <div style={modalContentStyle}>
@@ -196,7 +186,6 @@ export default function UserManagement() {
   );
 }
 
-/// STİLLER
 const thStyle: React.CSSProperties = { padding: '12px', borderBottom: '2px solid #ddd', color: '#666' };
 const tdStyle: React.CSSProperties = { padding: '10px' };
 const addBtnStyle: React.CSSProperties = { padding: '10px 15px', backgroundColor: '#2ecc71', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' };
@@ -204,15 +193,13 @@ const editBtnStyle: React.CSSProperties = { padding: '5px 10px', backgroundColor
 const deleteBtnStyle: React.CSSProperties = { padding: '5px 10px', backgroundColor: '#e74c3c', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' };
 const modalOverlayStyle: React.CSSProperties = { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 };
 const modalContentStyle: React.CSSProperties = { backgroundColor: 'white', padding: '25px', borderRadius: '8px', width: '400px', boxShadow: '0 5px 15px rgba(0,0,0,0.3)' };
-
-// HATA VEREN KISIM BURASIYDI, ŞİMDİ DÜZELDİ:
 const inputStyle: React.CSSProperties = { 
   width: '100%', 
   padding: '8px', 
   marginTop: '5px', 
   borderRadius: '4px', 
   border: '1px solid #ddd', 
-  boxSizing: 'border-box' // Artık React.CSSProperties sayesinde bunun geçerli bir değer olduğunu biliyor
+  boxSizing: 'border-box'
 };
 
 const formGroupStyle: React.CSSProperties = { marginBottom: '10px' };

@@ -31,7 +31,6 @@ export class AuthController {
 async getProfile(@Request() req) {
   
   const user = await this.userService.findOne(req.user.userId); 
-  // NOT: Senin servisinde findById mi var findOne mı var kontrol et.
   return user;
 }
 }

@@ -7,7 +7,6 @@ export default function TypeManagement() {
   const [types, setTypes] = useState<AnimalType[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // Modal ve Form State'leri
   const [showModal, setShowModal] = useState(false);
   const [typeName, setTypeName] = useState('');
   const [editId, setEditId] = useState<number | null>(null);
@@ -27,7 +26,6 @@ export default function TypeManagement() {
     }
   };
 
-  // --- MODAL İŞLEMLERİ ---
   const openAddModal = () => {
     setEditId(null);
     setTypeName('');
@@ -40,23 +38,19 @@ export default function TypeManagement() {
     setShowModal(true);
   };
 
-  // --- KAYDET / GÜNCELLE ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!typeName.trim()) return;
 
     try {
       if (editId) {
-        // Güncelleme
         await resourceService.updateAnimalType(editId, { name: typeName });
         toast.success('Tür güncellendi.');
-        // Listeyi arayüzde güncelle (animals verisini koruyarak)
         setTypes(types.map(t => t.id === editId ? { ...t, name: typeName } : t));
       } else {
-        // Ekleme
         await resourceService.createAnimalType({ name: typeName });
         toast.success('Yeni tür eklendi.');
-        loadTypes(); // Ekleme sonrası backend'den taze veri çekmek iyidir
+        loadTypes();
       }
       
       setShowModal(false);
@@ -100,7 +94,6 @@ export default function TypeManagement() {
             <tr key={t.id} style={{ borderBottom: '1px solid #eee' }}>
               <td style={tdStyle}><strong>{t.name}</strong></td>
               
-              {/* VERİ GÖSTERİMİ */}
               <td style={tdStyle}>
                  {t.animals ? t.animals.length : 0}
               </td>
@@ -114,7 +107,6 @@ export default function TypeManagement() {
         </tbody>
       </table>
 
-      {/* --- MODAL --- */}
       {showModal && (
         <div style={modalOverlayStyle}>
           <div style={modalContentStyle}>
@@ -145,7 +137,6 @@ export default function TypeManagement() {
   );
 }
 
-// STİLLER
 const thStyle: React.CSSProperties = { padding: '12px', borderBottom: '2px solid #ddd', color: '#666' };
 const tdStyle: React.CSSProperties = { padding: '10px' };
 const addBtnStyle: React.CSSProperties = { padding: '10px 15px', backgroundColor: '#2ecc71', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' };
