@@ -8,6 +8,11 @@ export const vaccineService = {
     return response.data;
   },
 
+  // YENİ: Güncelleme
+  update: async (id: number, data: Partial<CreateVaccineDto>): Promise<Vaccine> => {
+    const response = await api.patch<Vaccine>(`/vaccine/${id}`, data);
+    return response.data;
+  },
   // Aşı Sil (DELETE /vaccine/:id)
   delete: async (id: number): Promise<void> => {
     await api.delete(`/vaccine/${id}`);

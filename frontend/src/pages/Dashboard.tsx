@@ -140,9 +140,6 @@ export default function Dashboard() {
                         <button onClick={() => navigate(`/animal/${animal.id}`)}>
                           Detay
                         </button>
-                        <button onClick={() => alert('Aşı sayfası henüz yapılmadı')} style={actionBtnStyle('#6f42c1')}>
-                          Aşılar
-                        </button>
                       </>
                     )}
 

@@ -113,7 +113,6 @@ export default function UserManagement() {
       <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
         <thead>
           <tr style={{ backgroundColor: '#f8f9fa', textAlign: 'left' }}>
-            <th style={thStyle}>ID</th>
             <th style={thStyle}>Ad Soyad</th>
             <th style={thStyle}>Kullanıcı Adı</th>
             <th style={thStyle}>Email</th>
@@ -124,7 +123,6 @@ export default function UserManagement() {
         <tbody>
           {users.map(user => (
             <tr key={user.id} style={{ borderBottom: '1px solid #eee' }}>
-              <td style={tdStyle}>#{user.id}</td>
               <td style={tdStyle}><strong>{user.name}</strong></td>
               <td style={tdStyle}>{user.username}</td>
               <td style={tdStyle}>{user.email}</td>

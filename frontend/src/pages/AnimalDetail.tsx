@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { animalService } from '../services/animalService';
-import { vaccineService } from '../services/vaccineService'; // Yeni servis
-import type { Animal, CreateVaccineDto } from '../types';
+import { vaccineService } from '../services/vaccineService';
+import type { Animal, CreateVaccineDto, Vaccine } from '../types'; // Vaccine tipini import et
 import { toast } from 'react-toastify';
-import { useAuth } from '../context/authContext'; // Yetki kontrolü için
+import { useAuth } from '../context/authContext';
 
 export default function AnimalDetail() {
   const { id } = useParams();
@@ -14,9 +14,11 @@ export default function AnimalDetail() {
   const [animal, setAnimal] = useState<Animal | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Modal State'leri
+  // Modal ve Form State'leri
   const [showModal, setShowModal] = useState(false);
-  const [newVaccine, setNewVaccine] = useState<Partial<CreateVaccineDto>>({
+  const [editingVaccineId, setEditingVaccineId] = useState<number | null>(null); // Düzenlenen ID
+
+  const [vaccineForm, setVaccineForm] = useState<Partial<CreateVaccineDto>>({
     name: '',
     description: '',
     lastVaccinationDate: undefined,
@@ -30,7 +32,6 @@ export default function AnimalDetail() {
   const loadAnimal = async () => {
     if (!id) return;
     try {
-      // Backend'de relations: ['vaccines'] açık olmalı!
       const data = await animalService.getById(Number(id));
       setAnimal(data);
     } catch (error) {
@@ -41,28 +42,62 @@ export default function AnimalDetail() {
     }
   };
 
-  const handleAddVaccine = async (e: React.FormEvent) => {
+  // --- MODAL İŞLEMLERİ ---
+
+  // Tarihi Input formatına çevirir (YYYY-MM-DD)
+  const formatDateForInput = (dateString?: Date | string) => {
+    if (!dateString) return '';
+    return new Date(dateString).toISOString().split('T')[0];
+  };
+
+  const openAddModal = () => {
+    setEditingVaccineId(null);
+    setVaccineForm({ name: '', description: '', lastVaccinationDate: undefined, nextVaccinationDate: undefined });
+    setShowModal(true);
+  };
+
+  const openEditModal = (v: Vaccine) => {
+    setEditingVaccineId(v.id);
+    setVaccineForm({
+        name: v.name,
+        description: v.description,
+        lastVaccinationDate: v.lastVaccinationDate,
+        nextVaccinationDate: v.nextVaccinationDate
+    });
+    setShowModal(true);
+  };
+
+  // --- KAYDET / GÜNCELLE ---
+  const handleSaveVaccine = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!id || !newVaccine.name || !newVaccine.lastVaccinationDate || !newVaccine.nextVaccinationDate) {
+    if (!id || !vaccineForm.name || !vaccineForm.lastVaccinationDate || !vaccineForm.nextVaccinationDate) {
         toast.warning("Lütfen zorunlu alanları doldurun.");
         return;
     }
 
     try {
-      await vaccineService.create({
-        name: newVaccine.name,
-        description: newVaccine.description || '',
-        lastVaccinationDate: new Date(newVaccine.lastVaccinationDate),
-        nextVaccinationDate: new Date(newVaccine.nextVaccinationDate),
+      const payload = {
+        name: vaccineForm.name,
+        description: vaccineForm.description || '',
+        lastVaccinationDate: new Date(vaccineForm.lastVaccinationDate),
+        nextVaccinationDate: new Date(vaccineForm.nextVaccinationDate),
         animalId: Number(id)
-      });
+      };
+
+      if (editingVaccineId) {
+        // GÜNCELLEME
+        await vaccineService.update(editingVaccineId, payload);
+        toast.success('Aşı güncellendi.');
+      } else {
+        // EKLEME
+        await vaccineService.create(payload);
+        toast.success('Aşı eklendi.');
+      }
       
-      toast.success('Aşı başarıyla eklendi!');
-      setShowModal(false); // Modalı kapat
-      setNewVaccine({ name: '', description: '' }); // Formu temizle
-      loadAnimal(); // Listeyi güncelle
+      setShowModal(false);
+      loadAnimal(); // Listeyi yenile
     } catch (error) {
-      toast.error('Aşı eklenirken hata oluştu.');
+      toast.error('İşlem sırasında hata oluştu.');
     }
   };
 
@@ -71,7 +106,7 @@ export default function AnimalDetail() {
     try {
         await vaccineService.delete(vaccineId);
         toast.success("Aşı kaydı silindi.");
-        loadAnimal(); // Listeyi güncelle
+        loadAnimal();
     } catch (error) {
         toast.error("Silme işlemi başarısız.");
     }
@@ -87,7 +122,7 @@ export default function AnimalDetail() {
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto', paddingBottom: '50px' }}>
       
-      {/* --- ÜST KISIM (Aynı) --- */}
+      {/* ÜST KISIM (Aynı) */}
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', gap: '15px' }}>
         <button onClick={() => navigate(-1)} style={backBtnStyle}>← Geri</button>
         <h1 style={{ margin: 0, color: '#2c3e50' }}>{animal.name}</h1>
@@ -95,14 +130,13 @@ export default function AnimalDetail() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-        {/* KİMLİK KARTI */}
+        {/* Kimlik Kartı */}
         <div style={cardStyle}>
           <h3 style={headerStyle}>📋 Kimlik Kartı</h3>
-          {/*<div style={rowStyle}><strong>ID:</strong> #{animal.id}</div>*/}
           <div style={rowStyle}><strong>Yaş:</strong> {animal.age}</div>
         </div>
 
-        {/* İLETİŞİM */}
+        {/* İletişim */}
         <div style={cardStyle}>
           <h3 style={headerStyle}>👥 İletişim</h3>
           <div style={{ marginBottom: '10px' }}>
@@ -120,20 +154,18 @@ export default function AnimalDetail() {
         </div>
       </div>
 
-      {/* --- AŞI TAKVİMİ BÖLÜMÜ --- */}
+      {/* --- AŞI TAKVİMİ --- */}
       <div style={{ ...cardStyle, marginTop: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
             <h3 style={{ ...headerStyle, borderBottom: 'none', marginBottom: 0 }}>💉 Aşı Takvimi</h3>
             
-            {/* Sadece Veteriner/Admin ekleyebilir */}
             {canEdit && (
-                <button onClick={() => setShowModal(true)} style={addBtnStyle}>
+                <button onClick={openAddModal} style={addBtnStyle}>
                     + Aşı Ekle
                 </button>
             )}
         </div>
         
-        {/* Aşı Tablosu */}
         {animal.vaccines && animal.vaccines.length > 0 ? (
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
@@ -158,6 +190,9 @@ export default function AnimalDetail() {
                             <td style={tdStyle}>{v.description}</td>
                             {canEdit && (
                                 <td style={tdStyle}>
+                                    {/* DÜZENLE BUTONU */}
+                                    <button onClick={() => openEditModal(v)} style={editBtnStyle}>Düzenle</button>
+                                    {/* SİL BUTONU */}
                                     <button onClick={() => handleDeleteVaccine(v.id)} style={deleteBtnStyle}>Sil</button>
                                 </td>
                             )}
@@ -170,41 +205,45 @@ export default function AnimalDetail() {
         )}
       </div>
 
-      {/* --- AŞI EKLEME MODALI (POP-UP) --- */}
+      {/* --- ORTAK MODAL (EKLE & DÜZENLE) --- */}
       {showModal && (
         <div style={modalOverlayStyle}>
             <div style={modalContentStyle}>
-                <h3>Yeni Aşı Kaydı</h3>
-                <form onSubmit={handleAddVaccine}>
+                <h3>{editingVaccineId ? 'Aşı Kaydını Düzenle' : 'Yeni Aşı Kaydı'}</h3>
+                <form onSubmit={handleSaveVaccine}>
                     <div style={{marginBottom: '10px'}}>
                         <label>Aşı Adı:</label>
                         <input type="text" required style={inputStyle} 
-                            value={newVaccine.name} 
-                            onChange={e => setNewVaccine({...newVaccine, name: e.target.value})} 
+                            value={vaccineForm.name} 
+                            onChange={e => setVaccineForm({...vaccineForm, name: e.target.value})} 
                         />
                     </div>
                     <div style={{marginBottom: '10px'}}>
                         <label>Yapılış Tarihi:</label>
                         <input type="date" required style={inputStyle} 
-                            onChange={e => setNewVaccine({...newVaccine, lastVaccinationDate: new Date(e.target.value)})} 
+                            value={formatDateForInput(vaccineForm.lastVaccinationDate)}
+                            onChange={e => setVaccineForm({...vaccineForm, lastVaccinationDate: new Date(e.target.value)})} 
                         />
                     </div>
                     <div style={{marginBottom: '10px'}}>
                         <label>Bir Sonraki Doz Tarihi:</label>
                         <input type="date" required style={inputStyle} 
-                            onChange={e => setNewVaccine({...newVaccine, nextVaccinationDate: new Date(e.target.value)})} 
+                            value={formatDateForInput(vaccineForm.nextVaccinationDate)}
+                            onChange={e => setVaccineForm({...vaccineForm, nextVaccinationDate: new Date(e.target.value)})} 
                         />
                     </div>
                     <div style={{marginBottom: '15px'}}>
                         <label>Açıklama / Not:</label>
                         <textarea style={inputStyle} 
-                            value={newVaccine.description} 
-                            onChange={e => setNewVaccine({...newVaccine, description: e.target.value})} 
+                            value={vaccineForm.description} 
+                            onChange={e => setVaccineForm({...vaccineForm, description: e.target.value})} 
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                         <button type="button" onClick={() => setShowModal(false)} style={cancelBtnStyle}>İptal</button>
-                        <button type="submit" style={saveBtnStyle}>Kaydet</button>
+                        <button type="submit" style={saveBtnStyle}>
+                            {editingVaccineId ? 'Güncelle' : 'Kaydet'}
+                        </button>
                     </div>
                 </form>
             </div>
@@ -226,8 +265,8 @@ const emptyStateStyle: React.CSSProperties = { padding: '30px', textAlign: 'cent
 const thStyle = { padding: '12px', borderBottom: '2px solid #ddd', color: '#666' };
 const tdStyle = { padding: '10px', verticalAlign: 'top' };
 const deleteBtnStyle = { padding: '4px 8px', backgroundColor: '#e74c3c', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem' };
+const editBtnStyle = { padding: '4px 8px', backgroundColor: '#f39c12', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', marginRight: '5px' };
 
-// Modal Stilleri
 const modalOverlayStyle: React.CSSProperties = { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 };
 const modalContentStyle: React.CSSProperties = { backgroundColor: 'white', padding: '20px', borderRadius: '8px', width: '400px', boxShadow: '0 5px 15px rgba(0,0,0,0.3)' };
 const inputStyle: React.CSSProperties = { width: '100%', padding: '8px', marginTop: '5px', borderRadius: '4px', border: '1px solid #ddd', boxSizing: 'border-box' };
